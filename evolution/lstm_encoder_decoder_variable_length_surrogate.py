@@ -319,15 +319,29 @@ class SurrogateManager:
         if current_generation < self.n_gen_cold_start:
             # Use the real fitness function
             torch.cuda.empty_cache()
+            print("Cold start at generation ",str(current_generation))
             self.train_evaluate(G,D,train_generator,train_discriminator,norm_g,norm_d)
+
+            self.cold_start_x.append(G.get_model_vect()+D.get_model_vect())
+            self.cold_start_y.append(G.fitness())
+            
+            self.cold_start_x.append(D.get_model_vect()+G.get_model_vect())
+            self.cold_start_y.append(D.fitness())
         else:
             # Check if we use the real fitness function or the surrogate model
             if (((current_generation-self.n_gen_cold_start)%self.n_update)==0) and (current_generation>self.n_gen_cold_start):
                 # Train the networks in this generation then update
+                print("using real fitness at generation ",str(current_generation))
                 self.train_evaluate(G,D,train_generator,train_discriminator,norm_g,norm_d)
+                print("update surrogate model at generation ",str(current_generation))
+                self.sm.update(G.get_model_vect()+D.get_model_vect(), G.fitness())
+                self.sm.update(D.get_model_vect()+G.get_model_vect(), D.fitness())
+
             else:
                 # Use the surrogate model
 #                lg.debug("Use the surrogate model")
+                print("using surrogate model at generation ",str(current_generation))
+
                 estimate_fitness=self.estimate_evaluate(G,D)
                 if config.evolution.fitness.generator == "FID" or config.stats.calc_fid_score:
                     G.fid_score = estimate_fitness
@@ -384,13 +398,7 @@ class SurrogateManager:
         if config.evolution.fitness.generator == "FID" or config.stats.calc_fid_score:
                 G.calc_fid()  
 
-        self.cold_start_x.append(G.get_model_vect()+D.get_model_vect())
-        self.cold_start_y.append(G.fitness())
-        
-        self.cold_start_x.append(D.get_model_vect()+G.get_model_vect())
-        self.cold_start_y.append(D.fitness())
-        print("Cold start")
-#            set_trace() 
+#       set_trace() 
     def estimate_evaluate(self, pheno_1:Phenotype, pheno_2:Phenotype):
         # Use the surrogate model
 #                lg.debug("Use the surrogate model")
