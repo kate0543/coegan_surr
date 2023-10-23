@@ -51,7 +51,7 @@ class GanTrain:
         # Truong: This class handles everything surrogate-related
 
         self.surrogate_manager = SurrogateManager(config.surrogate_config, config.evolution.evaluation.iterations,
-                                                  self.train_loader,logger) 
+                                                  self.train_loader) 
 
 
     @classmethod
