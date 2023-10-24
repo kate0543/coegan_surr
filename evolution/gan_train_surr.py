@@ -140,20 +140,23 @@ class GanTrain:
             shuffle(discriminators)
             # random function not realized... dont use
             if evaluation_type == "random":
+                pair_idx=0
                 for D in discriminators:
                     for g in np.random.choice(generators, 2, replace=False):
-                        # self.surrogate_manager.evaluate_individual( g, D, norm_d=2, norm_g=len(discriminators))
-                        self.train_evaluate(G,D,True,True,norm_d=len(generators), norm_g=2)
+                        pair_idx+=1
+                        self.surrogate_manager.evaluate_individual( g, D, norm_d=2, norm_g=len(discriminators))
+                        self.train_evaluate(pair_idx,g,D,True,True,norm_d=len(generators), norm_g=2)
                 for G in generators:
                     for d in np.random.choice(discriminators, 2, replace=False):
-                        self.train_evaluate(G,D,True,True,norm_d=len(generators), norm_g=2)
+                        pair_idx+=1
+                        self.surrogate_manager.evaluate_individual(pair_idx, G, d, norm_d=2, norm_g=len(discriminators))
             elif evaluation_type == "all-vs-all":
                 # train all-vs-all in a non-sequential order
                 pairs = tools.permutations(generators, discriminators, random=True)
                 # for g, d in pairs:
-                for (individual_idx, (g, d)) in enumerate(pairs):
+                for (pair_idx, (g, d)) in enumerate(pairs):
                     # set_trace()
-                    self.surrogate_manager.evaluate_individual(individual_idx,generators[g], discriminators[d], norm_d=len(generators), norm_g=len(discriminators))
+                    self.surrogate_manager.evaluate_individual(pair_idx,generators[g], discriminators[d], norm_d=len(generators), norm_g=len(discriminators))
             elif evaluation_type in ["all-vs-best", "all-vs-species-best", "all-vs-kbest"]:
                 if config.evolution.evaluation.initialize_all and initial:
                     # as there are no way to determine the best G and D, we rely on all-vs-all for the first evaluation
@@ -162,12 +165,12 @@ class GanTrain:
                                                     best_generators, best_discriminators, evaluation_type="all-vs-all")
                 pairs = tools.permutations(best_generators, discriminators)
                 # for g, d in pairs:
-                for (individual_idx, (g, d)) in enumerate(pairs):
-                    self.surrogate_manager.evaluate_individual( individual_idx,best_generators[g], discriminators[d], norm_d=len(best_generators), norm_g=len(discriminators), train_generator=False)
+                for (pair_idx, (g, d)) in enumerate(pairs):
+                    self.surrogate_manager.evaluate_individual( pair_idx,best_generators[g], discriminators[d], norm_d=len(best_generators), norm_g=len(discriminators), train_generator=False)
                 pairs = tools.permutations(generators, best_discriminators)
                 # for g, d in pairs:
-                for (individual_idx, (g, d)) in enumerate(pairs):
-                    self.surrogate_manager.evaluate_individual( individual_idx,generators[g], best_discriminators[d], norm_d=len(generators), norm_g=len(best_discriminators), train_discriminator=False)
+                for (pair_idx, (g, d)) in enumerate(pairs):
+                    self.surrogate_manager.evaluate_individual( pair_idx,generators[g], best_discriminators[d], norm_d=len(generators), norm_g=len(best_discriminators), train_discriminator=False)
 
         if config.evolution.fitness.generator == "FID" or config.stats.calc_fid_score:
             for G in generators:
