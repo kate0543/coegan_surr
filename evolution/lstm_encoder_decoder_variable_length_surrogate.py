@@ -177,7 +177,7 @@ class VariableLengthAutoencoderLSTM:
             fixed_length_outputs.append(fixed_length_output)
 
 #        tf.keras.backend.clear_session()
-        print(fixed_length_outputs)
+        # print(fixed_length_outputs)
         return fixed_length_outputs
 
 class SMTWrapper:
@@ -306,7 +306,7 @@ class SurrogateManager:
             self.sm.train(np.array(self.cold_start_x_fixed_len), np.array(self.cold_start_y))
 
 
-    def evaluate_individual(self, individual_idx,
+    def evaluate_individual(self, pair_idx,
                             G:Generator, D:Discriminator,train_generator=True, train_discriminator=True, norm_g=1, norm_d=4):
         """
         Manages the evaluation of each individual, whether to use the real fitness function or the surrogate.
@@ -319,7 +319,7 @@ class SurrogateManager:
         if self.generation_idx < self.n_gen_cold_start:
             # Use the real fitness function
             torch.cuda.empty_cache()
-            print("Cold start at generation ",str(self.generation_idx),' individual_idx:', str(individual_idx))
+            print("Cold start at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
             self.train_evaluate(G,D,train_generator,train_discriminator,norm_g,norm_d)
 
             self.cold_start_x.append(G.get_model_vect()+D.get_model_vect())
@@ -332,16 +332,16 @@ class SurrogateManager:
             # Check if we use the real fitness function or the surrogate model
             if (((self.generation_idx-self.n_gen_cold_start)%self.n_update)==0) and (self.generation_idx>self.n_gen_cold_start):
                 # Train the networks in this generation then update
-                print("using real fitness at generation ",str(self.generation_idx),' individual_idx:', str(individual_idx))
+                print("using real fitness at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
                 self.train_evaluate(G,D,train_generator,train_discriminator,norm_g,norm_d)
-                print("update surrogate model at generation ",str(self.generation_idx),' individual_idx:', str(individual_idx))
+                print("update surrogate model at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
                 self.sm.update(G.get_model_vect()+D.get_model_vect(), G.fitness())
                 self.sm.update(D.get_model_vect()+G.get_model_vect(), D.fitness())
                 
             else:
                 # Use the surrogate model
 #                lg.debug("Use the surrogate model")
-                print("using surrogate model at generation ",str(self.generation_idx),' individual_idx:', str(individual_idx))
+                print("using surrogate model at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
 
                 estimate_fitness=self.estimate_evaluate(G,D)
                 if config.evolution.fitness.generator == "FID" or config.stats.calc_fid_score:
