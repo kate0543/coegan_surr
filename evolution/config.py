@@ -17,7 +17,7 @@ params = {
         "evaluation": {
             "type": "all-vs-all",  # all-vs-all | random | all-vs-best | all-vs-kbest | all-vs-species-best
             "best_size": 1,
-            "iterations": 1,
+            "iterations": 50,
             "initialize_all": True  # apply all-vs-all for the first time type is all-vs-best, all-vs-kbest or all-vs-species-best
         },
         "speciation": {
@@ -47,16 +47,16 @@ params = {
         "dropout": True,
         "dropout_rate":0.2,
         "discriminator": {
-            "population_size": 10,
+            "population_size": 5,
             "simple_layers": False,
-            "fixed": True,
+            "fixed": False,
             "use_gradient_penalty": False,
             "gradient_penalty_lambda": 10,
         },
         "generator": {
-            "population_size": 10,
+            "population_size": 5,
             "simple_layers": False,
-            "fixed": True,
+            "fixed": False,
         },
     },
     "optimizer": {
@@ -88,7 +88,7 @@ params = {
     },
         # Truong: Set config for the surrogate manager
     "surrogate_config" : {
-        "n_gen_cold_start": 10,
+        "n_gen_cold_start": 1,
         "surrogate_name" : "MLP",
         "n_update": 10,
         # "dataset_name": DATASET_NAME,
