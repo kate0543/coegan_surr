@@ -11,6 +11,9 @@ print(tf.__version__)
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import logging
+tf.get_logger().setLevel(logging.ERROR)
+
 import shutil
 from time import time
 from pdb import set_trace
