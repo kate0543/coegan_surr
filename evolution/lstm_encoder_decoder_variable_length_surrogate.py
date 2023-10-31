@@ -322,7 +322,6 @@ class SurrogateManager:
         if self.generation_idx < self.n_gen_cold_start:
             # Use the real fitness function
             print("Cold start at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
-            torch.cuda.empty_cache()
             self.train_evaluate(G,D,train_generator,train_discriminator,norm_g,norm_d)
 
             self.cold_start_x.append(G.get_model_vect()+D.get_model_vect())
@@ -336,7 +335,6 @@ class SurrogateManager:
             if (((self.generation_idx-self.n_gen_cold_start)%self.n_update)==0) and (self.generation_idx>self.n_gen_cold_start):
                 # Train the networks in this generation then update
                 print("using real fitness at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
-                torch.cuda.empty_cache()
                 self.train_evaluate(G,D,train_generator,train_discriminator,norm_g,norm_d)
                 print("update surrogate model at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
 
