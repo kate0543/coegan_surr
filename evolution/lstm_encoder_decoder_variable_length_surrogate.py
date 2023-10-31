@@ -338,8 +338,23 @@ class SurrogateManager:
                 print("using real fitness at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
                 self.train_evaluate(G,D,train_generator,train_discriminator,norm_g,norm_d)
                 print("update surrogate model at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
-                self.sm.update(G.get_model_vect()+D.get_model_vect(), G.fitness())
-                self.sm.update(D.get_model_vect()+G.get_model_vect(), D.fitness())
+
+                model_vect = G.get_model_vect()+D.get_model_vect()
+                fixed_model_vect = self.var_len_autoencoder_lstm_model.encode([model_vect])
+                fixed_model_vect = fixed_model_vect[0]
+                fixed_model_vect_np = np.array(fixed_model_vect)
+                self.sm.update(fixed_model_vect_np, G.fitness())
+
+                model_vect = D.get_model_vect()+G.get_model_vect()
+                fixed_model_vect = self.var_len_autoencoder_lstm_model.encode([model_vect])
+                fixed_model_vect = fixed_model_vect[0]
+                fixed_model_vect_np = np.array(fixed_model_vect)
+                self.sm.update(fixed_model_vect_np, D.fitness())
+
+                # update_x_fixed_len = self.var_len_autoencoder_lstm_model.encode( [G.get_model_vect()+D.get_model_vect()])
+                # self.sm.update(update_x_fixed_len, G.fitness())
+                # update_x_fixed_len =  self.var_len_autoencoder_lstm_model.encode([D.get_model_vect()+G.get_model_vect()])
+                # self.sm.update(update_x_fixed_len, D.fitness())
                 
             else:
                 # Use the surrogate model
