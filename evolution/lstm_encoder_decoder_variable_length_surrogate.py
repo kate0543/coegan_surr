@@ -321,8 +321,8 @@ class SurrogateManager:
             return
         if self.generation_idx < self.n_gen_cold_start:
             # Use the real fitness function
-            torch.cuda.empty_cache()
             print("Cold start at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
+            torch.cuda.empty_cache()
             self.train_evaluate(G,D,train_generator,train_discriminator,norm_g,norm_d)
 
             self.cold_start_x.append(G.get_model_vect()+D.get_model_vect())
@@ -336,6 +336,7 @@ class SurrogateManager:
             if (((self.generation_idx-self.n_gen_cold_start)%self.n_update)==0) and (self.generation_idx>self.n_gen_cold_start):
                 # Train the networks in this generation then update
                 print("using real fitness at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
+                torch.cuda.empty_cache()
                 self.train_evaluate(G,D,train_generator,train_discriminator,norm_g,norm_d)
                 print("update surrogate model at generation ",str(self.generation_idx),' pair_idx:', str(pair_idx))
 
@@ -350,11 +351,6 @@ class SurrogateManager:
                 fixed_model_vect = fixed_model_vect[0]
                 fixed_model_vect_np = np.array(fixed_model_vect)
                 self.sm.update(fixed_model_vect_np, D.fitness())
-
-                # update_x_fixed_len = self.var_len_autoencoder_lstm_model.encode( [G.get_model_vect()+D.get_model_vect()])
-                # self.sm.update(update_x_fixed_len, G.fitness())
-                # update_x_fixed_len =  self.var_len_autoencoder_lstm_model.encode([D.get_model_vect()+G.get_model_vect()])
-                # self.sm.update(update_x_fixed_len, D.fitness())
                 
             else:
                 # Use the surrogate model
