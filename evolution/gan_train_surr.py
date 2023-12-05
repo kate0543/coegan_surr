@@ -26,7 +26,7 @@ from metrics import generative_score
 
 from evolution.lstm_encoder_decoder_variable_length_surrogate import SurrogateManager
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 
@@ -273,10 +273,9 @@ class GanTrain:
         return species_selected
 
     def generate_children(self, species_list, generation):
-        # generate child (only mutation for now)
         children = []
         for species in species_list:
-            for  parents in enumerate(species):
+            for i, parents in enumerate(species):
                 mate = parents[1] if len(parents) > 1 else None
                 child = parents[0].breed(mate=mate, skip_mutation=mate is None)  # skip mutation when there is no mate
                 child.genome.generation = generation
