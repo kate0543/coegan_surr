@@ -1,4 +1,4 @@
-name: tf38-gpu-2
+name: tf38-gpu
 channels:
   - pytorch
   - nvidia
@@ -102,14 +102,11 @@ dependencies:
   - munkres=1.1.4=py_0
   - networkx=3.1=py38haa95532_0
   - numexpr=2.8.4=py38h7b80656_1
-  - numpy=1.24.3=py38h79a8e48_1
-  - numpy-base=1.24.3=py38h8a87ada_1
   - openjpeg=2.4.0=h4fc8c34_0
   - openssl=3.0.11=h2bbff1b_2
   - pandas=2.0.3=py38h4ed8f06_0
   - pango=1.50.7=h78c2152_0
   - pcre=8.45=hd77b12b_0
-  - pillow=10.0.1=py38h045eedc_0
   - pip=23.3=py38haa95532_0
   - pixman=0.40.0=h2bbff1b_1
   - platformdirs=3.10.0=py38haa95532_0
@@ -175,9 +172,11 @@ dependencies:
       - keras-preprocessing==1.1.2
       - libclang==16.0.6
       - markdown==3.5
+      - numpy==1.23.4
       - oauthlib==3.2.2
       - opt-einsum==3.3.0
       - packaging==23.2
+      - pillow==9.5.0
       - protobuf==3.19.6
       - pyasn1==0.5.0
       - pyasn1-modules==0.3.0
@@ -194,7 +193,9 @@ dependencies:
       - tensorflow-estimator==2.10.0
       - tensorflow-io-gcs-filesystem==0.31.0
       - termcolor==2.3.0
+      - tf-slim==1.1.0
       - torchsummary==1.5.1
       - werkzeug==3.0.1
       - wrapt==1.15.0
+      - xgboost==2.0.2
       - zipp==3.17.0
